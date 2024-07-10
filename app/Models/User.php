@@ -82,8 +82,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@cms.test') && $this->hasVerifiedEmail();
-        // return $this->hasAnyRole(Role::get()) && !$this->hasRole('Front User');
+        // return str_ends_with($this->email, str_replace('://', '@', strstr(config('app.url'), '://')));
+        // return str_ends_with($this->email, str_replace('://', '@', strstr(config('app.url'), '://'))) && $this->hasVerifiedEmail();
+        return $this->hasAnyRole(Role::get()) && !$this->hasRole('Front User');
     }
 
     public function getFilamentAvatarUrl(): ?string
