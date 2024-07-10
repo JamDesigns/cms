@@ -65,14 +65,16 @@ class UserResource extends Resource
                                     ->required()
                                     ->autofocus()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('email')
-                                    ->translateLabel()
-                                    ->email()
-                                    ->unique(ignoreRecord: true)
-                                    ->suffixIcon('heroicon-m-envelope')
-                                    ->suffixIconColor('primary')
-                                    ->required()
-                                    ->maxLength(255),
+                                    Forms\Components\TextInput::make('email')
+                                        ->translateLabel()
+                                        ->email()
+                                        ->unique(ignoreRecord: true)
+                                        ->suffixIcon('heroicon-m-envelope')
+                                        ->suffixIconColor('primary')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->hint(fn(User $record): string => $record->email_verified_at === null ? __('Unverified') : __('Verified'))
+                                        ->hintColor(fn(User $record): string => $record->email_verified_at === null ? 'danger' : 'success'),
                                 Forms\Components\TextInput::make('password')
                                     ->translateLabel()
                                     ->password()
@@ -157,7 +159,7 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\Filter::make('not-verified')
-                    ->label('Not Verified')
+                    ->label('Unverified')
                     ->translateLabel()
                     ->toggle()
                     ->query(fn(Builder $query): Builder => $query->where('email_verified_at', null)),
@@ -165,6 +167,7 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -67,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->authGuard('web')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->plugins([
                 BreezyCore::make()
                     ->avatarUploadComponent(

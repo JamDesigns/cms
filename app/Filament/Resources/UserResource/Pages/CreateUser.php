@@ -2,12 +2,40 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use Filament\Facades\Filament;
+use Illuminate\Support\Facades\URL;
 use App\Filament\Resources\UserResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Notifications\Auth\ResetPassword;
 
 class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
+
+    protected function afterCreate(): void
+    {
+        $user = $this->record;
+
+        //send veryfication email
+        $notification = new VerifyEmail();
+        $notification->url = URL::temporarySignedRoute(
+            'filament.' . Filament::getPanel()->getPath() . '.auth.email-verification.verify',
+            now()->addMinutes(config('auth.verification.expire', 60)),
+            [
+                'id' => $user->getKey(),
+                'hash' => sha1($user->getEmailForVerification()),
+            ],
+        );
+        $user->notify($notification);
+
+        //reset password
+        $token = app('auth.password.broker')->createToken($user);
+        $notification = new ResetPassword($token);
+        //set panel for url
+        $notification->url = filament()->getPanel('app')->getResetPasswordUrl($token, $user);
+        $user->notify($notification);
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
