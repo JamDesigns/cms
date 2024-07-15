@@ -2,32 +2,49 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use App\Models\Post;
-use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-// use RalphJSmit\Filament\SEO\SEO;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
 use Filament\Support\Enums\Alignment;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Fieldset;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\BulkActionGroup;
 use Illuminate\Database\Eloquent\Collection;
-use App\Filament\Resources\PostResource\Pages;
-use App\Filament\Resources\PostResource\RelationManagers;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Resources\Concerns\Translatable;
+use Filament\Tables\Actions\DeleteBulkAction;
+use App\Filament\Resources\PostResource\Pages\EditPost;
+use App\Filament\Resources\PostResource\Pages\ViewPost;
+use App\Filament\Resources\PostResource\Pages\ListPosts;
+use App\Filament\Resources\PostResource\Pages\CreatePost;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
 
 class PostResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Post::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $recordRouteKeyName = 'slug';
+    protected static ?string $recordRouteKeyName = 'id';
 
     public static function hiddenUserName(): bool
     {
@@ -74,15 +91,15 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->columns([
                         'sm' => 9,
                         'md' => 12,
                     ])
                     ->schema([
-                        Forms\Components\Fieldset::make()
+                        Fieldset::make()
                             ->schema([
-                                Forms\Components\TextInput::make('title')
+                                TextInput::make('title')
                                     ->translateLabel()
                                     ->string()
                                     ->live(onBlur: true)
@@ -97,11 +114,11 @@ class PostResource extends Resource
                                     ->maxLength(255)
                                     ->columnSpan('full')
                                     ->autofocus(),
-                                Forms\Components\TextInput::make('slug')
+                                TextInput::make('slug')
                                     ->translateLabel()
                                     ->readOnly()
                                     ->columnSpan('full'),
-                                Forms\Components\RichEditor::make('body')
+                                RichEditor::make('body')
                                     ->label('Content')
                                     ->translateLabel()
                                     ->fileAttachmentsDirectory('posts')
@@ -112,26 +129,29 @@ class PostResource extends Resource
                                 'sm' => 6,
                                 'md' => 8,
                             ]),
-                        Forms\Components\Fieldset::make()
+                        Fieldset::make()
                             ->schema([
-                                SpatieMediaLibraryFileUpload::make('image')
+                                FileUpload::make('image')
                                     ->label('Image')
                                     ->translateLabel()
                                     ->image()
                                     ->disk('public')
                                     ->directory('posts')
-                                    ->responsiveImages()
-                                    ->conversion('jpg')
                                     ->imageEditor()
                                     ->columnSpan('full'),
-                                Forms\Components\Select::make('category_id')
+                                Select::make('category_id')
                                     ->translateLabel()
                                     ->relationship('category', 'name')
+                                    ->getOptionLabelFromRecordUsing(
+                                        fn (Model $record) => $record->name
+                                    )
                                     ->native(false)
+                                    ->preload()
+                                    ->searchable()
                                     ->required()
                                     ->columnSpan('full')
                                     ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->translateLabel()
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
@@ -143,16 +163,11 @@ class PostResource extends Resource
                                             })
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('slug')
+                                        TextInput::make('slug')
                                             ->disabled()
                                             ->readOnly(),
-                                        // Forms\Components\Fieldset::make('SEO')
-                                        // ->schema([
-                                        //     SEO::make(),
-                                        // ])
-                                        // ->hidden(! auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])),
                                     ]),
-                                Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->translateLabel()
                                     ->options(fn(): array =>
                                         (auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])) ?
@@ -180,7 +195,7 @@ class PostResource extends Resource
                                     ->live(onBlur : true)
                                     ->native(false)
                                     ->required(),
-                                Forms\Components\DateTimePicker::make('created_at')
+                                DateTimePicker::make('created_at')
                                     ->label('Published')
                                     ->translateLabel()
                                     ->hidden(fn(Get $get): bool => $get('status') !== 'published')
@@ -193,11 +208,6 @@ class PostResource extends Resource
                                 'sm' => 3,
                                 'md' => 4,
                             ]),
-                            // Forms\Components\Fieldset::make('SEO')
-                            // ->schema([
-                            //     SEO::make(),
-                            // ])
-                            // ->visible(auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])),
                     ]),
             ]);
     }
@@ -206,21 +216,21 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('image')
+                ImageColumn::make('image')
                     ->label('Image')
                     ->translateLabel()
-                    ->defaultImageUrl(url('/storage/no-image.png')),
-                Tables\Columns\TextColumn::make('title')
+                    ->defaultImageUrl(url('/images/no-image.png')),
+                TextColumn::make('title')
                     ->translateLabel()
                     ->wrap()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Author')
                     ->translateLabel()
                     ->wrap()
                     ->hidden(PostResource::hiddenUserName())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->label('Category')
                     ->alignment(Alignment::Center)
                     ->translateLabel()
@@ -228,7 +238,7 @@ class PostResource extends Resource
                     ->color('info')
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->translateLabel()
                     ->alignment(Alignment::Center)
                     ->formatStateUsing(fn (string $state): string => __("{$state}"))
@@ -240,11 +250,11 @@ class PostResource extends Resource
                         'rejected' => 'danger',
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created at')
                     ->translateLabel()
                     ->date(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated at')
                     ->translateLabel()
                     ->dateTime()
@@ -253,24 +263,24 @@ class PostResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('draft')
+                Filter::make('draft')
                     ->label('Draft')
                     ->translateLabel()
                     ->toggle()
                     ->query(fn(Builder $query): Builder => $query->where('status', 'draft')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->after(function (Post $post) {
                         // delete single
                         Storage::disk('public')->delete($post->image);
                     }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (Collection $records) {
                             // delete multiple
                             foreach ($records as $record) {
@@ -290,17 +300,17 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\CommentsRelationManager::class,
+            CommentsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
-            'view' => Pages\ViewPost::route('/{record}'),
-            'edit' => Pages\EditPost::route('/{record}/edit'),
+            'index' => ListPosts::route('/'),
+            'create' => CreatePost::route('/create'),
+            'view' => ViewPost::route('/{record:id}'),
+            'edit' => EditPost::route('/{record:id}/edit'),
         ];
     }
 }

@@ -15,7 +15,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,46 +37,6 @@ class RoleResource extends Resource
     public static function getNavigationIcon(): ?string
     {
         return config('filament-spatie-roles-permissions.icons.role_navigation');
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->can('view-any Role');
-    }
-
-    public static function canViewAny(): bool
-    {
-        return auth()->user()->can('view-any Role');
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return auth()->user()->can('view Role');
-    }
-
-    public static function canCreate(): bool
-    {
-        return auth()->user()->can('create Role');
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()->can('update Role');
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->user()->can('delete Role');
-    }
-
-    public static function canRestore(Model $record): bool
-    {
-        return auth()->user()->can('restore Role');
-    }
-
-    public static function canForceDelete(Model $record): bool
-    {
-        return auth()->user()->can('force-delete Role');
     }
 
     public static function getModel(): string
@@ -160,16 +124,16 @@ class RoleResource extends Resource
                     ->searchable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                EditAction::make(),
+                ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ]);
     }
 

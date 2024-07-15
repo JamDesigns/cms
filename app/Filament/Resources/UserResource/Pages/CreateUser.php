@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use Filament\Facades\Filament;
-use Illuminate\Support\Facades\URL;
 use App\Filament\Resources\UserResource;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Facades\Filament;
 use Filament\Notifications\Auth\ResetPassword;
+use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\URL;
 
 class CreateUser extends CreateRecord
 {

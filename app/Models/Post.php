@@ -3,21 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use RalphJSmit\Laravel\SEO\Support\HasSEO;
-// use RalphJSmit\Laravel\SEO\Support\SEOData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\Image\Enums\Fit;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
-class Post extends Model implements HasMedia
+class Post extends Model
 {
     use HasFactory;
-    use InteractsWithMedia;
-    // use HasSEO;
+    use HasTranslations;
+
+    public $translatable = [
+        'title',
+        'slug',
+        'body',
+    ];
 
     protected $guarded = [];
 
@@ -36,13 +36,5 @@ class Post extends Model implements HasMedia
 
     public function comments(): HasMany {
         return $this->hasMany(Comment::class);
-    }
-
-    public function registerMediaConversions(Media $media = null): void
-    {
-        $this
-            ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
-            ->nonQueued();
     }
 }

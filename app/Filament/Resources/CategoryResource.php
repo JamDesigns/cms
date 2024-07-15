@@ -2,25 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\CategoryResource\Pages\CreateCategory;
+use App\Filament\Resources\CategoryResource\Pages\EditCategory;
+use App\Filament\Resources\CategoryResource\Pages\ListCategories;
+use App\Models\Category;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Category;
-use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Filament\Resources\Resource;
-// use RalphJSmit\Filament\SEO\SEO;
-use App\Filament\Resources\CategoryResource\Pages;
 
 class CategoryResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $recordRouteKeyName = 'slug';
+    protected static ?string $recordRouteKeyName = 'id';
 
     public static function getModelLabel(): string
     {
@@ -41,13 +49,13 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->columns([
                         'sm' => 1,
                         'md' => 2,
                     ])
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->translateLabel()
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
@@ -60,15 +68,10 @@ class CategoryResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->autofocus(),
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
                             ->translateLabel()
                             ->readOnly(),
                     ]),
-                    // Forms\Components\Fieldset::make('SEO')
-                    // ->schema([
-                    //     SEO::make(),
-                    // ])
-                    // ->visible(auth()->user()->hasAnyRole(['Super Admin', 'Admin', 'Editor'])),
             ]);
     }
 
@@ -76,16 +79,16 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->translateLabel()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created at')
                     ->translateLabel()
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated at')
                     ->translateLabel()
                     ->dateTime()
@@ -96,11 +99,11 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -115,9 +118,9 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'index' => ListCategories::route('/'),
+            'create' => CreateCategory::route('/create'),
+            'edit' => EditCategory::route('/{record:id}/edit'),
         ];
     }
 }

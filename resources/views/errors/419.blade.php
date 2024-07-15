@@ -1,5 +1,5 @@
 @extends('errors::layout')
 
-@section('title', __('Page Expired'))
+@section('title', __('http-statuses.419'))
 @section('code', '419')
-@section('message', __('Page Expired'))
+@section('message', __('http-statuses.419'))

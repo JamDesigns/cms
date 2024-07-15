@@ -10,6 +10,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\SpatieLaravelTranslatablePlugin;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -100,9 +101,15 @@ class AdminPanelProvider extends PanelProvider
                     ->timestampColumn('last_renew_password_at')
                     ->passwordExpiresIn(days: 30),
                 StickyHeaderPlugin::make(),
-                FilamentProgressbarPlugin::make()->color('#29b'),
+                FilamentProgressbarPlugin::make()
+                    ->color('#29b'),
                 FilamentApexChartsPlugin::make(),
                 FilamentChainedTranslationManagerPlugin::make(),
+                SpatieLaravelTranslatablePlugin::make()
+                    ->defaultLocales([
+                        'es',
+                        'en',
+                    ]),
             ]);
     }
 }

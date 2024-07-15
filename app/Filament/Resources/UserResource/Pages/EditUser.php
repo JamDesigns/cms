@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use App\Models\User;
-use Filament\Actions;
-use Filament\Facades\Filament;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Storage;
 use App\Filament\Resources\UserResource;
-use Filament\Resources\Pages\EditRecord;
-use Filament\Notifications\Auth\VerifyEmail;
+use App\Models\User;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Auth\ResetPassword;
+use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class EditUser extends EditRecord
 {
@@ -21,8 +22,8 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->after(function (User $user) {
                     // delete single
                     if (!empty($user->profile_photo_path)) {

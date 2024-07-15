@@ -2,14 +2,19 @@
 
 namespace App\Filament\Resources\PostResource\Pages;
 
-use App\Models\Post;
-use Filament\Actions;
-use Illuminate\Support\Facades\Storage;
 use App\Filament\Resources\PostResource;
+use App\Models\Post;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\LocaleSwitcher;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\EditRecord\Concerns\Translatable;
+use Illuminate\Support\Facades\Storage;
 
 class EditPost extends EditRecord
 {
+    use Translatable;
+
     protected static string $resource = PostResource::class;
 
     public $image = null;
@@ -17,8 +22,9 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            LocaleSwitcher::make(),
+            ViewAction::make(),
+            DeleteAction::make()
                 ->after(function (Post $post) {
                     // delete single
                     if (!empty($post->image)) {
@@ -30,6 +36,7 @@ class EditPost extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        dd($data, $data['image'], $this->image);
         $this->image = $data['image'];
 
         return $data;

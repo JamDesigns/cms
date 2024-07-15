@@ -2,14 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CommentResource\Pages;
+use App\Filament\Resources\CommentResource\Pages\EditComment;
+use App\Filament\Resources\CommentResource\Pages\ListComments;
+use App\Filament\Resources\CommentResource\Pages\ViewComment;
 use App\Models\Comment;
 use Carbon\Carbon;
-use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -43,13 +54,13 @@ class CommentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->columns([
                         'default' => 1,
                         'sm' => 8,
                     ])
                     ->schema([
-                        Forms\Components\Section::make()
+                        Section::make()
                             ->columns([
                                 'default' => 1,
                                 'sm' => 5,
@@ -58,29 +69,29 @@ class CommentResource extends Resource
                                 'sm' => 5,
                             ])
                             ->schema([
-                                Forms\Components\Fieldset::make('Author')
+                                Fieldset::make('Author')
                                     ->translateLabel()
                                     ->schema([
-                                        Forms\Components\Placeholder::make('Name')
+                                        Placeholder::make('Name')
                                             ->content(fn(Comment $record): string => $record->user->name)
                                             ->label('Name')
                                             ->translateLabel(),
-                                        Forms\Components\Placeholder::make('Email')
+                                        Placeholder::make('Email')
                                             ->content(fn(Comment $record): string => $record->user->email)
                                             ->label('Email')
                                             ->translateLabel(),
                                     ]),
-                                Forms\Components\Fieldset::make('content')
+                                Fieldset::make('content')
                                     ->label('Comment')
                                     ->translateLabel()
                                     ->schema([
-                                        Forms\Components\Placeholder::make('content')
+                                        Placeholder::make('content')
                                             ->label('')
                                             ->translateLabel()
                                             ->content(fn(Comment $record): string => $record->content),
                                     ]),
                             ]),
-                        Forms\Components\Section::make()
+                        Section::make()
                             ->columns([
                                 'default' => 1,
                                 'sm' => 3,
@@ -90,7 +101,7 @@ class CommentResource extends Resource
                                 'sm' => 6,
                             ])
                             ->schema([
-                                Forms\Components\ToggleButtons::make('status')
+                                ToggleButtons::make('status')
                                     ->translateLabel()
                                     ->boolean()
                                     ->grouped()
@@ -108,15 +119,15 @@ class CommentResource extends Resource
                                         false => 'danger',
                                     ])
                                     ->columnSpanFull(),
-                                Forms\Components\Placeholder::make('created_at')
+                                Placeholder::make('created_at')
                                     ->label('')
                                     ->content(fn(Comment $record): string => __('Sent on') . ': ' . (Carbon::parse($record->created_at)->isoFormat('D MMM YYYY hh:ss')))
                                     ->columnSpanFull(),
-                                Forms\Components\Placeholder::make('post.title')
+                                Placeholder::make('post.title')
                                     ->label('')
                                     ->content(fn(Comment $record): string => __('In response to post') . ': ' . $record->post->title)
                                     ->columnSpanFull(),
-                                Forms\Components\Placeholder::make('parent.user_id')
+                                Placeholder::make('parent.user_id')
                                     ->label('')
                                     ->content(fn(Comment $record): string => ($record->comment_id >= 1 ? __('In response to user') . ' ' . $record->user->name : __('In response to no one')))
                                     ->columnSpanFull(),
@@ -129,17 +140,17 @@ class CommentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Author')
                     ->translateLabel()
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('content')
+                TextColumn::make('content')
                     ->label('Comment')
                     ->translateLabel()
                     ->wrap()
                     ->markdown()
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= $column->getCharacterLimit()) {
                             return null;
@@ -148,36 +159,36 @@ class CommentResource extends Resource
                     })
                     ->limit(50)
                     ->description(fn(Comment $record): string => ($record->comment_id !== null ? __('In response to') . ' ' . $record->parent->user->name : ''), position: 'above'),
-                Tables\Columns\IconColumn::make('status')
+                IconColumn::make('status')
                     ->label('Accepted')
                     ->translateLabel()
                     ->alignment(Alignment::Center)
                     ->boolean(),
-                Tables\Columns\TextColumn::make('post.title')
+                TextColumn::make('post.title')
                     ->label('In response to')
                     ->translateLabel()
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent on')
                     ->translateLabel()
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('Rejected')
+                Filter::make('Rejected')
                     ->label('Rejected')
                     ->translateLabel()
                     ->toggle()
                     ->query(fn(Builder $query): Builder => $query->where('status', false)),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->persistFiltersInSession()
@@ -196,9 +207,9 @@ class CommentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListComments::route('/'),
-            'view' => Pages\ViewComment::route('/{record}'),
-            'edit' => Pages\EditComment::route('/{record}/edit'),
+            'index' => ListComments::route('/'),
+            'view' => ViewComment::route('/{record}'),
+            'edit' => EditComment::route('/{record}/edit'),
         ];
     }
 }
