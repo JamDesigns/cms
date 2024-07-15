@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -53,9 +55,9 @@ class DatabaseSeeder extends Seeder
 
         $user->assignRole($roleSuper);
 
-        // GeneralSetting::create([
-        //     'site_name' => env('APP_NAME'),
-        //     'site_DESCRIPTION' => env('APP_DESCRIPTION'),
-        // ]);
+        Category::create([
+            'name' => '{"es":"Sin categoría"}',
+            'slug' => '{"es":"sin-categoría"}',
+        ]);
     }
 }

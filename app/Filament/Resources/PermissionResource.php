@@ -15,8 +15,12 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -33,46 +37,6 @@ class PermissionResource extends Resource
     public static function getNavigationIcon(): ?string
     {
         return config('filament-spatie-roles-permissions.icons.permission_navigation');
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->can('view-any Permission');
-    }
-
-    public static function canViewAny(): bool
-    {
-        return auth()->user()->can('view-any Permission');
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return auth()->user()->can('view Permission');
-    }
-
-    public static function canCreate(): bool
-    {
-        return auth()->user()->can('create Permission');
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return auth()->user()->can('update Permission');
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->user()->can('delete Permission');
-    }
-
-    public static function canRestore(Model $record): bool
-    {
-        return auth()->user()->can('restore Permission');
-    }
-
-    public static function canForceDelete(Model $record): bool
-    {
-        return auth()->user()->can('force-delete Permission');
     }
 
     public static function getModel(): string
@@ -186,12 +150,12 @@ class PermissionResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                EditAction::make(),
+                ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
                 BulkAction::make('Attach to roles')
                     ->action(function (Collection $records, array $data): void {
@@ -208,7 +172,7 @@ class PermissionResource extends Resource
                     ])->deselectRecordsAfterCompletion(),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ]);
     }
 

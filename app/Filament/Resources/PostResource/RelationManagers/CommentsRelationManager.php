@@ -11,7 +11,11 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -126,17 +130,17 @@ class CommentsRelationManager extends RelationManager
         return $table
             ->heading(__('Comments'))
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Author')
                     ->translateLabel()
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('content')
+                TextColumn::make('content')
                     ->label('Comment')
                     ->translateLabel()
                     ->wrap()
                     ->markdown()
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= $column->getCharacterLimit()) {
                             return null;
@@ -145,24 +149,24 @@ class CommentsRelationManager extends RelationManager
                     })
                     ->limit(50)
                     ->description(fn(Comment $record): string => ($record->comment_id !== null ? __('In response to') . ' ' . $record->parent->user->name : ''), position: 'above'),
-                Tables\Columns\IconColumn::make('status')
+                IconColumn::make('status')
                     ->label('Accepted')
                     ->translateLabel()
                     ->alignment(Alignment::Center)
                     ->boolean(),
-                Tables\Columns\TextColumn::make('post.title')
+                TextColumn::make('post.title')
                     ->label('In response to')
                     ->translateLabel()
                     ->wrap()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent on')
                     ->translateLabel()
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('Rejected')
+                Filter::make('Rejected')
                     ->label('Rejected')
                     ->translateLabel()
                     ->toggle()
@@ -172,8 +176,8 @@ class CommentsRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
                 //

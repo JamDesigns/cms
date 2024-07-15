@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
-use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Statikbe\FilamentTranslationManager\FilamentTranslationManager;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,13 +28,11 @@ class AppServiceProvider extends ServiceProvider
             ->locales([
                 'es',
                 'en',
-                // 'fr',
             ]); // also accepts a closure
         });
         FilamentTranslationManager::setLocales([
             'es',
             'en',
-            // 'fr',
         ]);
     }
 }

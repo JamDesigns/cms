@@ -2,17 +2,33 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\ViewUser;
 use App\Models\User;
-use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Jetstream\Jetstream;
 
 class UserResource extends Resource
 {
@@ -39,13 +55,13 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->columns([
                         'default' => 1,
                         'sm' => 4,
                     ])
                     ->schema([
-                        Forms\Components\FileUpload::make('profile_photo_path')
+                        FileUpload::make('profile_photo_path')
                             ->label('Photo')
                             ->translateLabel()
                             ->avatar()
@@ -53,29 +69,29 @@ class UserResource extends Resource
                             ->image()
                             ->directory('users')
                             ->imageEditor(),
-                        Forms\Components\Hidden::make('profile_photo_url'),
-                        Forms\Components\Fieldset::make()
+                        Hidden::make('profile_photo_url'),
+                        Fieldset::make()
                             ->columnStart([
                                 'sm' => 2,
                             ])
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->translateLabel()
                                     ->string()
                                     ->required()
                                     ->autofocus()
                                     ->maxLength(255),
-                                    Forms\Components\TextInput::make('email')
-                                        ->translateLabel()
-                                        ->email()
-                                        ->unique(ignoreRecord: true)
-                                        ->suffixIcon('heroicon-m-envelope')
-                                        ->suffixIconColor('primary')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->hint(fn(User $record): string => $record->email_verified_at === null ? __('Unverified') : __('Verified'))
-                                        ->hintColor(fn(User $record): string => $record->email_verified_at === null ? 'danger' : 'success'),
-                                Forms\Components\TextInput::make('password')
+                                TextInput::make('email')
+                                    ->translateLabel()
+                                    ->email()
+                                    ->unique(ignoreRecord: true)
+                                    ->suffixIcon('heroicon-m-envelope')
+                                    ->suffixIconColor('primary')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->hint(fn(?User $record): string => $record != null && $record->email_verified_at != null ? __('Verified') : __('Unverified'))
+                                    ->hintColor(fn(?User $record): string => $record != null && $record->email_verified_at != null ? 'success' : 'danger'),
+                                TextInput::make('password')
                                     ->translateLabel()
                                     ->password()
                                     ->suffixIcon('heroicon-m-key')
@@ -83,19 +99,19 @@ class UserResource extends Resource
                                     ->revealable()
                                     ->required()
                                     ->confirmed()
-                                    ->hiddenOn('edit')
+                                    ->visibleOn('create')
                                     ->same('password_confirmation')
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('password_confirmation')
+                                TextInput::make('password_confirmation')
                                     ->translateLabel()
                                     ->password()
                                     ->suffixIcon('heroicon-m-key')
                                     ->suffixIconColor('primary')
                                     ->revealable()
                                     ->required()
-                                    ->hiddenOn('edit')
+                                    ->visibleOn('create')
                                     ->maxLength(255),
-                                Forms\Components\Select::make('roles')
+                                Select::make('roles')
                                     ->relationship('roles', 'name')
                                     ->translateLabel()
                                     ->multiple()
@@ -111,23 +127,23 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('profile_photo_url')
+                ImageColumn::make('profile_photo_url')
                     ->label('Photo')
                     ->translateLabel()
                     ->visible(true === \Laravel\Jetstream\Jetstream::managesProfilePhotos())
                     ->circular(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->translateLabel()
                     ->wrap()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->translateLabel()
                     ->wrap()
                     ->icon('heroicon-m-envelope')
                     ->iconColor('primary')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name')
+                TextColumn::make('roles.name')
                     ->translateLabel()
                     ->alignment(Alignment::Center)
                     ->badge()
@@ -137,19 +153,19 @@ class UserResource extends Resource
                     ->limitList(2)
                     ->color('info')
                     ->expandableLimitedList(),
-                Tables\Columns\TextColumn::make('email_verified_at')
+                TextColumn::make('email_verified_at')
                     ->label('Email verified')
                     ->translateLabel()
                     ->dateTime()
                     ->since(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created at')
                     ->translateLabel()
                     ->dateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated at')
                     ->translateLabel()
                     ->dateTime()
@@ -158,23 +174,23 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('not-verified')
+                Filter::make('not-verified')
                     ->label('Unverified')
                     ->translateLabel()
                     ->toggle()
                     ->query(fn(Builder $query): Builder => $query->where('email_verified_at', null)),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->after(function (Collection $records) {
                             // delete multiple
-                            if (\Laravel\Jetstream\Jetstream::managesProfilePhotos()) {
+                            if (Jetstream::managesProfilePhotos()) {
                                 foreach ($records as $record) {
                                     if ($record->profile_photo_path != null) {
                                         Storage::disk('public')->delete($record->profile_photo_path);
@@ -201,10 +217,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'view' => ViewUser::route('/{record}'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

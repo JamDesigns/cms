@@ -1,5 +1,5 @@
 @extends('errors::layout')
 
-@section('title', __('Unauthorized'))
+@section('title', __('http-statuses.401'))
 @section('code', '401')
-@section('message', __('Unauthorized'))
+@section('message', __('http-statuses.401'))

@@ -62,7 +62,7 @@ class StatsOverview extends BaseWidget
                 ->description(__('Total posts')),
             Stat::make(__('Last post'), (isset($lastPost->title) ? $lastPost->title : '---'))
                 ->color(isset($lastPost->title) && $lastPost->status === 'published' ? 'success' : 'warning')
-                ->description((isset($lastPost->created_at) ? __('Created the') . ' ' . Carbon::parse($lastPost->created_at)->isoFormat('dddd, D MMMM YYYY') . ' ' . __('by') . ' ' . $lastPost->user->name . ' (' . __($lastPost->status) . ')' : '')),
+                ->description((isset($lastPost->created_at) ? '(' . __(ucfirst($lastPost->status)) . ') ' . __('Created at') . ' ' . Carbon::parse($lastPost->created_at)->isoFormat('dddd, D MMMM YYYY') . ' ' . __('by') . ' ' . $lastPost->user->name : '')),
             Stat::make(__('Draft posts'), $totalDraftPosts)
                 ->color($percentageDraftPost > 0 ? 'warning' : 'success')
                 ->description($percentageDraftPost . __('% of total') . ' ' . __('of') . ' ' . __('posts')),
