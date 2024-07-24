@@ -56,8 +56,8 @@ class DatabaseSeeder extends Seeder
         $user->assignRole($roleSuper);
 
         Category::create([
-            'name' => '{"es":"Sin categoría"}',
-            'slug' => '{"es":"sin-categoría"}',
+            'name' => '{"es":"Sin categoría", "en":"Without category"}',
+            'slug' => '{"es":"sin-categoría", "en":"without-category"}',
         ]);
     }
 }

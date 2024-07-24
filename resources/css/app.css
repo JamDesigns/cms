@@ -5,3 +5,87 @@
 [x-cloak] {
     display: none;
 }
+
+h1 {
+    font-size:xx-large;
+    font-weight: bold;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: x-large;
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+h3 {
+    font-size: large;
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 1rem;
+    text-align: left;
+    color: cornflowerblue;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+p a {
+    color: blue;
+    text-decoration: underline;
+}
+
+pre {
+    overflow: auto;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    border: 2px;
+    background-color: black;
+    color: yellow;
+    border-radius: 0.5rem;
+}
+
+blockquote {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+    font-size: large;
+    font-style: oblique;
+    color: gray;
+}
+
+img {
+    margin-bottom: 1rem;
+}
+
+figure {
+    margin-bottom: 1rem;
+}
+
+figure img {
+    margin: 0 auto;
+}
+
+figure figcaption {
+    padding: 0.5rem 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+ul,
+ol {
+    margin-left: 3rem;
+    margin-bottom: 1rem;
+}
+
+ul {
+    list-style: disc;
+}
+
+ol {
+    list-style: decimal;
+}

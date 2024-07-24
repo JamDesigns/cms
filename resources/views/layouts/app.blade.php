@@ -5,31 +5,40 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        {{-- <title>{{ isset($title) ? $title . ' - ' . config('app.name', 'Laravel') : config('app.name', 'Laravel') }}</title> --}}
+
+        {!! SEO::generate() !!}
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href={{ strtolower(substr($_SERVER['SERVER_PROTOCOL'], 0, strpos($_SERVER['SERVER_PROTOCOL'], '/' ))) . '://' . $_SERVER['HTTP_HOST'] ."/favicon.ico" }}>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        <!-- Font Awesome -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-sans antialiased">
-        <x-banner />
+    <body class="bg-gray-100 font-family-karla">
 
-        <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
+        <!-- Page Heading -->
+        <x-app-header title="{{ config('app.name') }}" description="Totam accusamus deleniti culpa ullam nihil odit culpa" image="background_612x612.jpg" />
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
+        <!-- Page Navigation -->
+        @include('layouts.navigation')
+
+        <div class="container mx-auto py-8">
+            <!-- Flash Message -->
+            @if (flash()->message)
+                <div class="z-50 float-right text-center px-4 py-2 rounded-md shadow-md {{ flash()->class }}">
+                    {{ flash()->message }}
+                </div>
             @endif
 
             <!-- Page Content -->
@@ -37,6 +46,9 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Page Footing -->
+        @include('layouts.footer')
 
         @stack('modals')
 
