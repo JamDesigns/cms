@@ -36,7 +36,6 @@ class EditPost extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        dd($data, $data['image'], $this->image);
         $this->image = $data['image'];
 
         return $data;

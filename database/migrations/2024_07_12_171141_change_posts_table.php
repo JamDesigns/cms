@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
+            $table->json('image')->change();
             $table->json('title')->change();
             $table->json('slug')->change();
             $table->json('body')->change();
@@ -24,6 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
+            $table->string('image')->change();
             $table->string('title')->change();
             $table->string('slug')->change();
             $table->longText('body')->change();
