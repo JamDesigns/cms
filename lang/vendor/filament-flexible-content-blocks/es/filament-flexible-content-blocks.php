@@ -12,10 +12,10 @@ return [
     'filter.is_published.published_label' => 'Publicado',
     'filter.is_published.unpublished_label' => 'Sin publicar',
 
-    'table_action.publish.publish_notification_success_title' => 'Publicado!',
+    'table_action.publish.publish_notification_success_title' => '¡Publicado!',
     'table_action.publish.publish_notification_success_msg' => 'La página ya está publicada.',
     'table_action.publish.publish_notification_error_title' => 'Error',
-    'table_action.publish.unpublish_notification_success_title' => 'Sin publicar!',
+    'table_action.publish.unpublish_notification_success_title' => '¡Sin publicar!',
     'table_action.publish.unpublish_notification_success_msg' => 'La página no está publicada.',
     'table_action.publish.unpublish_notification_error_title' => 'Error',
     'table_action.publish.publish_lbl' => 'Publicado',
@@ -23,7 +23,7 @@ return [
     'table_action.view_page_lbl' => 'Vista',
 
     'form_component.translatable_hint' => 'Puedes traducir este campo.',
-    'form_component.translatable_image_hint' => 'Puedes agregar una imagen traducida.',
+    'form_component.translatable_image_hint' => 'Puedes añadir una imagen traducida.',
     'form_component.title_lbl' => 'Título',
     'form_component.slug_lbl' => 'Slug',
     'form_component.slug_desc' => '<strong>Atención:</strong> Cuando cambias el slug de una página publicada, la URL cambiará.',
@@ -46,9 +46,9 @@ return [
     'form_component.hero_image_section_title' => 'Imagen de héroe',
     'form_component.intro_lbl' => 'Introducción',
     'form_component.content_blocks_lbl' => 'Cuerpo',
-    'form_component.content_blocks_add_lbl' => 'Agregar bloque',
+    'form_component.content_blocks_add_lbl' => 'Añadir bloque',
     'form_component.image_position_lbl' => 'Posición de la imagen',
-    'form_component.image_position_help' => 'Seleccione la posición de la imagen en relación con el bloque de texto.',
+    'form_component.image_position_help' => 'Selecciona la posición de la imagen en relación con el bloque de texto.',
     'form_component.block_style_lbl' => 'Estilo de bloque',
     'form_component.block_style_help' => 'Esto renderizará el bloque de una manera diferente.',
     'form_component.image_width_lbl' => 'Ancho de la imagen',
@@ -78,7 +78,7 @@ return [
     'form_component.content_blocks.text.label' => 'Texto',
     'form_component.content_blocks.video.label' => 'Vídeo',
     'form_component.content_blocks.video.embed_url' => 'URL de medios',
-    'form_component.content_blocks.video.help' => 'Agregue la URL, p.e. de un vídeo de YouTube o Vimeo.',
+    'form_component.content_blocks.video.help' => 'Añade la URL, p.e. de un vídeo de YouTube o Vimeo.',
     'form_component.content_blocks.video.overlay_image' => 'Imagen superpuesta',
     'form_component.content_blocks.video.sr_msg' => 'Reproduce el video',
     'form_component.content_blocks.html.title' => 'HTML',
@@ -154,8 +154,8 @@ return [
 
     'form_component.media_embed.validation' => 'La URL incluida no es una URL de medios válida.',
 
-    'form_component.parent_lbl' => 'contenido principal',
-    'form_component.parent_help' => 'Elija el contenido bajo el cual debería aparecer este contenido. El slug del contenido principal se mostrará delante del slug de este contenido en la URL.',
+    'form_component.parent_lbl' => 'Contenido principal',
+    'form_component.parent_help' => 'Elije el contenido bajo el cual debería aparecer este contenido. El slug del contenido principal se mostrará delante del slug de este contenido en la URL.',
 
     'form_action.seo_ai_action.name' => 'Generar datos SEO',
     'form_action.seo_ai_action.name_on_create' => 'Generar datos de SEO (¡solo al editar!)',
