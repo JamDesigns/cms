@@ -26,7 +26,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -136,7 +136,7 @@ class PostResource extends Resource
                                     ->translateLabel()
                                     ->image()
                                     ->disk('public')
-                                    ->directory('posts')
+                                    ->responsiveImages()
                                     ->imageEditor()
                                     ->columnSpan('full'),
                                 Select::make('category_id')
@@ -216,7 +216,7 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
+                SpatieMediaLibraryImageColumn::make('image')
                     ->label('Image')
                     ->translateLabel()
                     ->defaultImageUrl(url('/images/no-image.png')),
