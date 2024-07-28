@@ -24,30 +24,8 @@ class EditPost extends EditRecord
         return [
             LocaleSwitcher::make(),
             ViewAction::make(),
-            DeleteAction::make()
-                ->after(function (Post $post) {
-                    // delete single
-                    if (!empty($post->image)) {
-                        Storage::disk('public')->delete($post->image);
-                    }
-                }),
+            DeleteAction::make(),
         ];
-    }
-
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        $this->image = $data['image'];
-
-        return $data;
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        if (!empty($this->image) && $this->image !== $data['image']) {
-            Storage::disk('public')->delete($this->image);
-        }
-
-        return $data;
     }
 
     protected function getRedirectUrl(): string

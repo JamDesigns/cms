@@ -19,10 +19,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Storage::disk('public')->deleteDirectory('media');
-        Storage::disk('public')->deleteDirectory('posts');
         Storage::disk('public')->deleteDirectory('users');
         Storage::disk('public')->makeDirectory('media');
-        Storage::disk('public')->makeDirectory('posts');
         Storage::disk('public')->makeDirectory('users');
 
         $roleSuper = Role::create([
